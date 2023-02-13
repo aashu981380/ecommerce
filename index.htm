@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="app">
+        <div class="leftside">
+            <div class="cart"><p id="cartno">cart(2 items)</p></div>
+            <div class="productAll">
+
+                <!-- <div class="product1">
+                    <img src="shirt1.jpg" alt="" srcset="">
+                    <div class="productdetailall">
+                    <div class="productdetail">
+                        <p>Shirts</p>
+                        <p>Size:XL,X</p>
+                        <p>Color:white</p>
+                        <p>Cost:$10</p>
+                    </div>
+                    <div class="orderbtn">
+                        <button id="less"><i class="fas fa-minus"></i>
+                        </button > <p id="productno">0</p> <button id="add"><i class="fas fa-plus"></i></button></div>
+                </div>
+            </div> -->
+
+        </div>
+   
+    </div>
+    <div class="rightside">
+        <div class="operationall">
+         <div class="costoperation">
+            <p>The Amount Of</p>
+            <p >Product Amount <span id="productamount">Rs0</span></p>
+            <p>Shipping Amount <span id=>Rs500</span></p>
+            <p>Total Amount With Vat <span id="totalamount"></span></p>
+         </div>
+  
+      
+            <div class="discountoperation">
+               <p>Add a discount code (optional)</p>
+          <input type="text" placeholder="Enter a discount code"> <br>
+          <label></label> <br>
+          <button>Apply</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    let add = document.querySelectorAll("#add");
+    let less = document.querySelectorAll("#less");
+    let productAlldisplay = document.querySelector(".productAll")
+    // let productno = document.querySelectorAll("#productno");
+    let productamountdisplay = document.querySelector("#productamount")
+    let totalamountdisplay = document.querySelector("#totalamount")
+    let input = document.querySelector("input");
+    let discountmsg =document.querySelector(".discountoperation label");
+    let discountbtn = document.querySelector(".discountoperation button")
+     let cartno = document.querySelector("#cartno");
+
+let shopdata = [
+    {
+        name: "Shirt",
+        price: 1000,
+        img: "images/shirt1.jpg",
+        item:0,
+        id:"s1"
+    },
+    {
+        name: "pant",
+        price: 3000,
+        img: "images/pant.jpg",
+        item:0,
+        id:"p1"
+    },
+    {
+        name: "tie",
+        price: 3000,
+        img: "images/tie.jpg",
+        item:0,
+        id:"t1"
+    }
+
+]
+let basket = []
+let totalshoppingamountonly;
+let finalprice;
+const shopgenerator = ()=>{
+    cartno.textContent = `cart(${shopdata.length}items)`
+    return (
+        
+      productAlldisplay.innerHTML=  shopdata.map((data)=>{
+     
+      return(  
+      
+        `<div class="product1">
+                    <img src="${data.img}" alt="" srcset="">
+                    <div class="productdetailall">
+                    <div class="productdetail">
+                        <p>${data.name}</p>
+                        <p>Size:XL,X</p>
+                        <p>Color:white</p>
+                        <p>Cost:Rs${data.price}</p>
+                    </div>
+                    <div class="orderbtn">
+                        <button id="less" onclick="decrement(this)" ><i class="fas fa-minus"></i>
+                        </button ><p id="${data.id}">0</p><button id="add" onclick="increment(this)"><i class="fas fa-plus"></i></button></div>
+                </div>
+            </div>`
+    )
+    })
+    )
+  
+}
+shopgenerator()
+const increment = (e)=>{
+    let productno = e.previousSibling;
+
+let search = basket.find((x)=>x.id==e.previousSibling.id)
+if(search == undefined){
+   let idmatch =  shopdata.find((x)=> x.id == e.previousSibling.id)
+  basket.push({
+    name: idmatch.name,
+    price: idmatch.price,
+        item:1,
+        id: idmatch.id
+  })
+//   console.log(basket)
+productno.innerHTML = 1;
+
+    // let searchupdate = basket.find((x)=>x.id==e.previousSibling.id)
+    // update(searchupdate)
+
+}
+else{
+  
+    search.item += 1
+    productno.innerHTML = search.item
+    // console.log(basket)
+    // console.log(e.previousSibling)
+    // update(search)
+}
+
+update()
+}
+const decrement = (e)=>{
+    let productno = e.nextSibling;
+
+    let idmatch =  basket.find((x)=> x.id == e.nextSibling.id)
+if(idmatch != undefined){
+    if(idmatch.item >0){
+    idmatch.item -=1;
+e.nextSibling.innerHTML =  idmatch.item
+// console.log(basket)
+    }
+}
+update()
+}
+let shippingamount =500
+const update = ()=>{
+
+    //  console.log("shippig",shippingamount)
+     totalshoppingamountonly = basket.map((x)=>x.item*x.price).reduce((x,y)=>x+y);
+   
+productamountdisplay.innerHTML = `Rs${totalshoppingamountonly}`
+finalprice = totalshoppingamountonly+shippingamount
+totalamountdisplay.innerHTML = `Rs${finalprice}`
+
+}
+let code = "abc"
+discountbtn.onclick = ()=>{
+ let inputvalue = input.value;
+
+ if(inputvalue === code){
+
+if(basket.length >0){
+    shippingamount = 0;
+    update();
+    discountmsg.style.color = "green"
+    discountmsg.innerHTML = "Done!"
+    // console.log(finalprice)
+}
+
+ }
+ else{
+    discountmsg.innerHTML = "code is invalid!"
+ }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /*let basket = []
+const shopgenerator = ()=>{
+    return( productAlldisplay.innerHTML = shopdata.map((data)=>{
+    return(
+        `<div class="product1">
+                    <img src="${data.img}" alt="" srcset="">
+                    <div class="productdetailall">
+                    <div class="productdetail">
+                        <p>${data.name}</p>
+                        <p>Size:XL,X</p>
+                        <p>Color:white</p>
+                        <p>Cost:Rs${data.price}</p>
+                    </div>
+                    <div class="orderbtn">
+                        <button id="less" onclick ="decrement(this)"><i class="fas fa-minus"></i>
+                        </button ><p id="${data.id}">0</p> <button id="add" onclick ="increment(this)"><i class="fas fa-plus"></i></button></div>
+                </div>
+            </div>`
+    )
+    })
+    )
+
+}
+shopgenerator()
+let no = 0
+const increment = (e)=>{
+let search = basket.find((x)=> x.id == e.previousElementSibling.id);
+
+
+if(search === undefined){
+    basket.push({
+        id:e.previousElementSibling.id,
+        item:1,
+    
+   
+    })
+    console.log(basket)
+    e.previousElementSibling.innerHTML = 1
+
+}
+else{
+    search.item +=1;
+  e.previousElementSibling.innerHTML = search.item
+}
+
+update()
+}
+
+const decrement = (e)=>{
+
+let search = basket.find((x)=>x.id === e.nextSibling.id)
+if(search != undefined){
+  if(search.item != 0){
+ search.item -=1
+ e.nextSibling.innerHTML = search.item
+}
+else {
+return
+    }
+
+}
+update()
+  }
+const update = ()=>{
+// let search = basket.filter((x)=>x.item >0)
+
+let pricecal = basket.map((e)=>{
+ 
+return e
+
+})
+
+// .reduce((t,e)=>t+e);
+console.log(pricecal)
+
+}
+*/
+</script>
